@@ -3,6 +3,11 @@ include "connect.php";
 include "Includes/functions/functions.php";
 include "Includes/templates/header.php";
 include "Includes/templates/navbar.php";
+
+// Get published blog posts from database
+$stmt = $con->prepare("SELECT * FROM blog_posts WHERE status = 'published' ORDER BY created_at DESC");
+$stmt->execute();
+$blogPosts = $stmt->fetchAll();
 ?>
 
 <!-- BLOGS SECTION -->
@@ -15,155 +20,46 @@ include "Includes/templates/navbar.php";
         </div>
 
         <div class="row">
-            <!-- Blog Post 1 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #9e8a78, #897666); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-cut" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 15, 2024
-                        </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">The Classic Pompadour: A Timeless Style</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            The pompadour has been a symbol of confidence and style for decades. This classic cut features short sides and back with longer hair on top, styled upward and back. Perfect for men who want a sophisticated, retro look that never goes out of style.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Classic</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Pompadour</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
-                    </div>
+            <?php if(empty($blogPosts)): ?>
+                <div class="col-12 text-center">
+                    <p style="color: #666; font-size: 18px;">No blog posts available at the moment. Check back soon!</p>
                 </div>
-            </div>
-
-            <!-- Blog Post 2 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #897666, #6b5b4d); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-razor" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 12, 2024
+            <?php else: ?>
+                <?php foreach($blogPosts as $post): ?>
+                    <div class="col-lg-4 col-md-6 mb-5">
+                        <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+                            <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #9e8a78, #897666); display: flex; align-items: center; justify-content: center;">
+                                <?php if($post['image_url']): ?>
+                                    <img src="<?php echo htmlspecialchars($post['image_url']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                <?php else: ?>
+                                    <i class="fas fa-cut" style="font-size: 60px; color: white;"></i>
+                                <?php endif; ?>
+                            </div>
+                            <div class="blog-content" style="padding: 25px;">
+                                <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
+                                    <i class="far fa-calendar-alt"></i> <?php echo date('F d, Y', strtotime($post['created_at'])); ?>
+                                </div>
+                                <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;"><?php echo htmlspecialchars($post['title']); ?></h3>
+                                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                                    <?php echo htmlspecialchars($post['excerpt'] ?: substr(strip_tags($post['content']), 0, 150) . '...'); ?>
+                                </p>
+                                <?php if($post['tags']): ?>
+                                    <div class="blog-tags" style="margin-bottom: 20px;">
+                                        <?php 
+                                            $tags = explode(',', $post['tags']);
+                                            foreach($tags as $tag): ?>
+                                                <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;"><?php echo htmlspecialchars(trim($tag)); ?></span>
+                                            <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <a href="blog-post.php?id=<?php echo $post['post_id']; ?>" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
+                                </a>
+                            </div>
                         </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">Modern Fade Techniques: From Skin to High</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            Fades have become the go-to style for modern men. From skin fades to high fades, these techniques create seamless transitions between different hair lengths. Learn about the different fade styles and which one suits your face shape best.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Modern</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Fade</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
                     </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 3 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #6b5b4d, #9e8a78); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-beard" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 10, 2024
-                        </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">Beard Grooming: The Complete Guide</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            A well-groomed beard can transform your entire look. From trimming techniques to product recommendations, discover how to maintain a healthy, stylish beard that complements your haircut and enhances your overall appearance.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Beard</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Grooming</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 4 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #9e8a78, #6b5b4d); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-palette" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 8, 2024
-                        </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">2024 Hair Color Trends for Men</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            From subtle highlights to bold color choices, men's hair coloring is more popular than ever. Explore the latest trends including balayage, ombre, and creative color techniques that can add dimension and personality to any haircut.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Color</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Trends</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 5 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #6b5b4d, #897666); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-tint" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 5, 2024
-                        </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">Hair Care Products: What You Need to Know</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            The right hair care products can make all the difference in maintaining your style. From shampoos and conditioners to styling products, learn which products work best for different hair types and how to use them effectively.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Products</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Care</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blog Post 6 -->
-            <div class="col-lg-4 col-md-6 mb-5">
-                <div class="blog-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                    <div class="blog-image" style="height: 250px; background: linear-gradient(45deg, #897666, #9e8a78); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user-tie" style="font-size: 60px; color: white;"></i>
-                    </div>
-                    <div class="blog-content" style="padding: 25px;">
-                        <div class="blog-meta" style="color: #999; font-size: 14px; margin-bottom: 15px;">
-                            <i class="far fa-calendar-alt"></i> December 3, 2024
-                        </div>
-                        <h3 style="color: #333; margin-bottom: 15px; font-size: 22px;">Professional Hairstyles for the Workplace</h3>
-                        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                            Looking professional doesn't mean sacrificing style. Discover haircuts that are both trendy and workplace-appropriate. From executive cuts to modern business styles, find the perfect look for your professional environment.
-                        </p>
-                        <div class="blog-tags" style="margin-bottom: 20px;">
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 8px;">Professional</span>
-                            <span style="background: #9e8a78; color: white; padding: 5px 12px; border-radius: 15px; font-size: 12px;">Workplace</span>
-                        </div>
-                        <a href="#" class="read-more" style="color: #9e8a78; text-decoration: none; font-weight: 600; font-size: 14px;">
-                            Read More <i class="fas fa-arrow-right" style="margin-left: 5px;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
 

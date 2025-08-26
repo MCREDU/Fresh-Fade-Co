@@ -14,8 +14,7 @@
 					<div class="col-md-6 xs-padding">
 						<ul class="footer_social">
 							<li><a href="faq.php">FAQ</a></li>
-							<li><a href="#">Orders</a></li>
-							<li><a href="#">Terms</a></li>
+							<li><a href="barber-admin/login.php">Admin Login</a></li>
 							<li><a href="#">Report Problem</a></li>
 						</ul>
 					</div>

@@ -247,6 +247,34 @@ INSERT INTO `service_categories` (`category_id`, `category_name`) VALUES
 (3, 'Face Masking'),
 (4, 'Uncategorized');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blog_posts`
+--
+
+CREATE TABLE `blog_posts` (
+  `post_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `excerpt` text DEFAULT NULL,
+  `image_url` varchar(500) DEFAULT NULL,
+  `tags` varchar(500) DEFAULT NULL,
+  `author_id` int(5) DEFAULT NULL,
+  `status` enum('published','draft') DEFAULT 'published',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `blog_posts`
+--
+
+INSERT INTO `blog_posts` (`post_id`, `title`, `content`, `excerpt`, `image_url`, `tags`, `author_id`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'The Classic Pompadour: A Timeless Style', 'The pompadour has been a symbol of confidence and style for decades. This classic cut features short sides and back with longer hair on top, styled upward and back. Perfect for men who want a sophisticated, retro look that never goes out of style.\n\nTo achieve the perfect pompadour, start with hair that is at least 3-4 inches long on top. The sides and back should be shorter, typically a #2 or #3 guard. Use a quality pomade or wax to style the top hair upward and back, creating volume and height.\n\nKey styling tips:\n- Use a fine-tooth comb for precise styling\n- Apply product to damp hair for better control\n- Start styling from the front and work backward\n- Don\'t be afraid to use a blow dryer for extra volume\n- Finish with hairspray for hold', 'The pompadour has been a symbol of confidence and style for decades. This classic cut features short sides and back with longer hair on top, styled upward and back.', 'pompadour.jpg', 'Classic,Pompadour,Retro', 1, 'published', '2024-12-15 00:00:00', '2024-12-15 00:00:00'),
+(2, 'Modern Fade Techniques: From Skin to High', 'Fades have become the go-to style for modern men. From skin fades to high fades, these techniques create seamless transitions between different hair lengths. Learn about the different fade styles and which one suits your face shape best.\n\nSkin Fade: The most dramatic fade that goes all the way to the skin. Perfect for those who want a clean, sharp look.\n\nLow Fade: Starts just above the ear and creates a subtle transition. Great for professional settings.\n\nMid Fade: Begins around the middle of the head and offers a balanced look.\n\nHigh Fade: Starts higher up and creates a bold, modern appearance.\n\nFade maintenance:\n- Get touch-ups every 2-3 weeks\n- Use quality clippers for clean lines\n- Consider your hair texture when choosing fade type\n- Match the fade to your personal style', 'Fades have become the go-to style for modern men. From skin fades to high fades, these techniques create seamless transitions between different hair lengths.', 'fade.jpg', 'Modern,Fade,Technique', 1, 'published', '2024-12-12 00:00:00', '2024-12-12 00:00:00'),
+(3, 'Beard Grooming: The Complete Guide', 'A well-groomed beard can transform your entire look. From trimming techniques to product recommendations, discover how to maintain a healthy, stylish beard that complements your haircut and enhances your overall appearance.\n\nBeard care essentials:\n- Wash your beard 2-3 times per week with beard shampoo\n- Use beard oil daily to moisturize and prevent itchiness\n- Invest in quality trimmers for precise shaping\n- Comb your beard regularly to train the hair growth direction\n- Trim split ends to maintain a healthy appearance\n\nBeard styles by face shape:\n- Round face: Go for angular shapes and longer sides\n- Square face: Soften angles with rounded edges\n- Oval face: Most styles work well\n- Triangle face: Keep the chin area fuller\n\nProduct recommendations:\n- Beard oil with natural ingredients\n- Beard balm for styling and hold\n- Quality scissors for trimming\n- Beard brush for daily grooming', 'A well-groomed beard can transform your entire look. From trimming techniques to product recommendations, discover how to maintain a healthy, stylish beard.', 'beard.jpg', 'Beard,Grooming,Guide', 1, 'published', '2024-12-10 00:00:00', '2024-12-10 00:00:00');
+
 --
 -- Indexes for dumped tables
 --
@@ -307,6 +335,13 @@ ALTER TABLE `service_categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
+-- Indexes for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  ADD PRIMARY KEY (`post_id`),
+  ADD KEY `author_id` (`author_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -353,6 +388,12 @@ ALTER TABLE `service_categories`
   MODIFY `category_id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -362,6 +403,12 @@ ALTER TABLE `service_categories`
 ALTER TABLE `appointments`
   ADD CONSTRAINT `FK_client_appointment` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `FK_employee_appointment` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  ADD CONSTRAINT `blog_posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `barber_admin` (`admin_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
