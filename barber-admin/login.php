@@ -118,7 +118,7 @@
 		<footer class="sticky-footer bg-white">
 			<div class="container my-auto">
 		  		<div class="copyright text-center my-auto">
-					<span>Copyright &copy; Barbershop Website by JAIRI IDRISS 2020</span>
+					<span>Copyright &copy; Barbershop Website by fresh fade co</span>
 		  		</div>
 			</div>
 	  	</footer>
